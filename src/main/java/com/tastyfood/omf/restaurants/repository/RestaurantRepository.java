@@ -13,7 +13,7 @@ import com.tastyfood.omf.restaurants.entity.Restaurant;
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, UUID> {
 
-	Page<Restaurant> findByRestaurantNameAndLocation(String restaurantName, String location, PageRequest pageRequest);
+	Page<Restaurant> findByRestaurantNameAndLocation(String restaurantName, String location, Pageable pageRequest);
 
 //	Page<Restaurant> findByRestaurantName(String restaurantName, PageRequest pageRequest);
 //

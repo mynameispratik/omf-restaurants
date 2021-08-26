@@ -12,14 +12,17 @@ import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class RestaurantPagedList extends PageImpl<RestaurantDto> implements Serializable{
 
+public class RestaurantPagedList extends PageImpl<RestaurantDto>{
+
+	
+
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	
 	@JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public RestaurantPagedList(@JsonProperty("content") List<RestaurantDto> content,
                          @JsonProperty("number") int number,
@@ -35,7 +38,6 @@ public class RestaurantPagedList extends PageImpl<RestaurantDto> implements Seri
         super(content, PageRequest.of(number, size), totalElements);
     }
 
-	@JsonCreator(mode = Mode.PROPERTIES)
     public RestaurantPagedList(List<RestaurantDto> content, Pageable pageable, long total) {
         super(content, pageable, total);
     }

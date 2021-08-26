@@ -40,7 +40,7 @@ public class RestaurantController {
 		return new ResponseEntity<RestaurantDto>(restaurantService.updateRestaurant(restaurantDTO,id), HttpStatus.NO_CONTENT);
 	}
 
-	@GetMapping(produces = {"appication/json"},path="restaurant")
+	@GetMapping("/restaurant")
 	public ResponseEntity<RestaurantPagedList> listRestaurant(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
 																@RequestParam(value = "pageSize", required = false) Integer pageSize,
 																@RequestParam(value = "location", required = false) String location,

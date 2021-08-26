@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tastyfood.omf.restaurants.dto.RestaurantDto;
 import com.tastyfood.omf.restaurants.dto.RestaurantPagedList;
 import com.tastyfood.omf.restaurants.entity.Restaurant;
@@ -24,6 +25,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
 	private final RestaurantRepository restaurantRepository;
 	private final RestaurantMapper restaurantMapper;
+	private ObjectMapper mapper;
 
 	@Override
 	public RestaurantDto addRestaurant(RestaurantDto restaurantDTO) {
@@ -42,21 +44,25 @@ public class RestaurantServiceImpl implements RestaurantService {
 		RestaurantPagedList pagedList = null;
 		Page<Restaurant> restuarantPage = null;
 
-		if ((!restaurantName.isEmpty()) && (!location.isEmpty())) {
+		if (( restaurantName != null &&!restaurantName.isEmpty()) && (location!= null &&!location.isEmpty() )) {
 			restuarantPage = restaurantRepository.findByRestaurantNameAndLocation(restaurantName, location,
 					pageRequest);
-		} else if ((!restaurantName.isEmpty())) {
+		} else if ((!restaurantName.isEmpty()&& restaurantName != null)) {
 			restuarantPage = restaurantRepository.findAllByRestaurantName(restaurantName, pageRequest);
-		} else if ((!location.isEmpty())) {
+		} else if ((location!= null &&!location.isEmpty())) {
 			restuarantPage = restaurantRepository.findAllByLocation(location, pageRequest);
 		} else {
 			restuarantPage = restaurantRepository.findAll(pageRequest);
 		}
 
-		if ((!dish.isEmpty() && dish != null) && (budget !=null)) {
+		if (( dish != null&&!dish.isEmpty() ) && (budget !=null)) {
+			BigDecimal decimal= new BigDecimal(budget);
+			
+			restuarantPage.getContent().stream().forEach(o->o.getDishes().removeIf(i-> !i.getDishName().equals(dish) &&!(i.getPrice().compareTo(decimal)==0)));
+			
 			pagedList = new RestaurantPagedList(
 					restuarantPage.getContent().stream().filter(rest -> rest.getDishes().stream().anyMatch(
-							i -> i.getPrice().equals(budget) && i.getPrice().equals(BigDecimal.valueOf(budget))))
+							i -> i.getDishName().equals(dish) && i.getPrice().compareTo(decimal)==0 ))
 							.map(restaurantMapper::restaurantToRestaurantDto).collect(Collectors.toList()),
 					PageRequest.of(restuarantPage.getPageable().getPageNumber(),
 							restuarantPage.getPageable().getPageSize()),
@@ -64,19 +70,23 @@ public class RestaurantServiceImpl implements RestaurantService {
 		}
 
 		else if (budget!=null) {
+			BigDecimal decimal= new BigDecimal(budget);
+			
+			restuarantPage.getContent().stream().forEach(o->o.getDishes().removeIf(i-> !(i.getPrice().compareTo(decimal)==0)));
 			pagedList = new RestaurantPagedList(
 					restuarantPage.getContent().stream()
-							.filter(rest -> rest.getDishes().stream()
-									.anyMatch(i -> i.getPrice().equals(BigDecimal.valueOf(budget))))
+//							.filter(rest -> rest.getDishes().stream()
+//									.anyMatch(i -> i.getPrice().compareTo(decimal)==0 ))
 							.map(restaurantMapper::restaurantToRestaurantDto).collect(Collectors.toList()),
 					PageRequest.of(restuarantPage.getPageable().getPageNumber(),
 							restuarantPage.getPageable().getPageSize()),
 					restuarantPage.getTotalElements());
 
 		} else if ((!dish.isEmpty() && dish != null)) {
+			restuarantPage.getContent().stream().forEach(o->o.getDishes().removeIf(i-> !i.getDishName().equals(dish)));
 			pagedList = new RestaurantPagedList(
 					restuarantPage.getContent().stream()
-							.filter(rest -> rest.getDishes().stream().anyMatch(i -> i.getDishName().equals(dish)))
+						//	.filter(rest -> rest.getDishes().stream().anyMatch(i -> i.getDishName().equals(dish)))
 							.map(restaurantMapper::restaurantToRestaurantDto).collect(Collectors.toList()),
 					PageRequest.of(restuarantPage.getPageable().getPageNumber(),
 							restuarantPage.getPageable().getPageSize()),
