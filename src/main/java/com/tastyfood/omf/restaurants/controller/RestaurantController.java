@@ -35,7 +35,7 @@ public class RestaurantController {
 		return new ResponseEntity<RestaurantDto>(restaurantService.addRestaurant(restaurantDTO), HttpStatus.CREATED);
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping("restaurant/{id}")
 	public  ResponseEntity<RestaurantDto> updateRestaurant(@RequestBody RestaurantDto restaurantDTO, @PathVariable("id") UUID id){
 		return new ResponseEntity<RestaurantDto>(restaurantService.updateRestaurant(restaurantDTO,id), HttpStatus.NO_CONTENT);
 	}
